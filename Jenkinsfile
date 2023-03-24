@@ -1,11 +1,7 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent {
-        node {
-            label 'main'
-        }
-    }
+    agent any
 
     stages {
         stage('Initialize') {
