@@ -1,39 +1,37 @@
-pipeline {
-    agent any
-
-    tools {
-        maven 'Maven 3.8.4'
-        jdk 'Java 11'
+#!/usr/bin/env groovy
+pipeline{
+    agent{
+        node{
+            label 'main'
+        }
+    }
+}
+stages{
+    stage('Initialize'){
+        steps{
+            script{
+                def dockerHome = tool 'myDocker'
+                env.PATH = "${dockerHome}/bin:${env.PATH}"
+            }
+        }
     }
 
-    stages {
-        stage('Initialize') {
-            steps {
-                script {
-                    def mavenHome = tool 'Maven 3.8.4'
-                    env.PATH = "${mavenHome}/bin:${env.PATH}"
-                }
-            }
+    stage('build'){
+        agent{ docker { image 'python:3.8-slim-buster' } }
+        steps{
+            sh 'pip install -r requirements.txt'
         }
+    }
 
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
+    stage('Docker Image'){
+        steps{
+            sh 'docker image build -t myapp .'
         }
+    }
 
-        stage('Docker Build') {
-            agent { docker { image 'docker' } }
-            steps {
-                sh 'docker image build -t myapp .'
-            }
-        }
-
-        stage('Docker Run') {
-            agent { docker { image 'docker' } }
-            steps {
-                sh 'docker run -p 5000:5000 myapp'
-            }
+    stage('Run Image / Container Creation'){
+        steps{
+            sh 'docker run -p 5000:5000 my-app'
         }
     }
 }
