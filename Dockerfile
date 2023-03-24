@@ -1,19 +1,20 @@
-# start by pulling the python image
+# Set the base image
 FROM python:3.8-slim-buster
 
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
-
-# switch working directory
+# Set the working directory
 WORKDIR /app
 
-# install the dependencies and packages in the requirements file
-RUN pip install -r requirements.txt
+# Copy the requirements file to the working directory
+COPY requirements.txt .
 
-# copy every content from the local file to the image
-COPY . /app
+# Install the dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
+# Copy the rest of the application code to the working directory
+COPY . .
 
-CMD ["app.py" ]
+# Expose the port number on which the application will run
+EXPOSE 5000
+
+# Start the application
+CMD ["python", "app.py"]
