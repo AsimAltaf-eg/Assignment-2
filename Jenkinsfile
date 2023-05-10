@@ -14,7 +14,7 @@ pipeline {
         }
 
         stage('build') {
-            agent { docker { image 'python:3.8' } }
+            agent { docker { image 'python:3.8-slim-buster' } }
             steps {
                 sh 'pip install -r requirements.txt'
             }
